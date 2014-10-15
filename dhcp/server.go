@@ -22,6 +22,8 @@ func NewServer(endpoint string) *Server {
 }
 
 func (s *Server) Run() {
+	log.Info("Starting DHCP server, agent address is %s", s.client.Endpoint)
+
 	err := dhcp.ListenAndServe(s)
 	if err != nil {
 		log.Error(err)
