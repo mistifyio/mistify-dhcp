@@ -31,22 +31,26 @@ func (s *Server) Run() {
 
 func (s *Server) ServeDHCP(packet dhcp.Packet, msgType dhcp.MessageType, options dhcp.Options) dhcp.Packet {
 	var replyType dhcp.MessageType
+	var logMessage string
 
 	switch msgType {
 	case dhcp.Discover:
 		replyType = dhcp.Offer
+		logMessage = "Discover"
 	case dhcp.Request:
 		replyType = dhcp.ACK
+		logMessage = "Request"
 	default:
 		return nil
 	}
 
 	mac := packet.CHAddr().String()
 
-	log.Info("dhcp.%v: %+v\n", msgType, mac)
+	log.Info("dhcp.%s: %+v\n", logMessage, mac)
 
 	nic, err := s.getNic(mac)
 	if err != nil {
+		log.Error("Couldn't get NIC for MAC address %s: %s", mac, err.Error())
 		return nil
 	}
 
@@ -77,4 +81,3 @@ func (server *Server) getNic(mac string) (*core.Nic, error) {
 	}
 	return nil, client.NotFound
 }
-
