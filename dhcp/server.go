@@ -11,21 +11,27 @@ import (
 )
 
 type Server struct {
-	client *client.Client
-	iface  string
+	client     *client.Client
+	ifaceNames []string
 }
 
-func NewServer(endpoint string, iface string) *Server {
+func NewServer(endpoint string, ifaceNames []string) *Server {
 	server := &Server{}
 	server.client = client.NewClient(endpoint)
-	server.iface = iface
+	server.ifaceNames = ifaceNames
 
 	return server
 }
 
 func (s *Server) Run() {
-	log.Info("Starting DHCP server on %s, agent address is %s\n", s.iface, s.client.Endpoint)
-	err := dhcp.ListenAndServeIf(s.iface, s)
+	log.Info("Starting DHCP server, agent address is %s\n", s.client.Endpoint)
+	conn, err := NewDHCPConnection(s.ifaceNames)
+	if err != nil {
+		log.Error(err)
+		os.Exit(1)
+	}
+
+	err = dhcp.Serve(conn, s)
 	if err != nil {
 		log.Error(err)
 		os.Exit(1)
