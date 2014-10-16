@@ -3,13 +3,20 @@ package main
 import (
 	"flag"
 	"github.com/mistifyio/mistify-dhcp/dhcp"
+	"strings"
 )
 
 func main() {
+	var ifaceNames []string
+
 	agent := flag.String("agent", "http://127.0.0.1:8080", "Agent address")
-	iface := flag.String("interface", "", "Interface to listen on")
+	ifaces := flag.String("interfaces", "", "Interfaces to listen on, comma-separated (default: all)")
 	flag.Parse()
 
-	server := dhcp.NewServer(*agent, *iface)
+	if *ifaces != "" {
+		ifaceNames = strings.Split(*ifaces, ",")
+	}
+
+	server := dhcp.NewServer(*agent, ifaceNames)
 	server.Run()
 }
