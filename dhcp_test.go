@@ -6,7 +6,7 @@ import (
 	"crypto/rand"
 	"encoding/json"
 	dhcp "github.com/krolaw/dhcp4"
-	"github.com/mistifyio/mistify-agent/core"
+	"github.com/mistifyio/mistify-agent/rpc"
 	"net"
 	"net/http"
 	"testing"
@@ -16,19 +16,19 @@ func TestDHCP(t *testing.T) {
 	agent := "http://10.233.22.100:8080"
 	ifname := "eth1"
 
-	guest := core.Guest{
+	guest := rpc.Guest{
 		Memory: 512,
 		Cpu:    1,
-		Nics: []core.Nic{
-			core.Nic{
+		Nics: []rpc.Nic{
+			rpc.Nic{
 				Model:   "e1000",
 				Address: "10.0.0.2",
 				Netmask: "255.255.255.0",
 				Gateway: "10.0.0.1",
 			},
 		},
-		Disks: []core.Disk{
-			core.Disk{Size: 100},
+		Disks: []rpc.Disk{
+			rpc.Disk{Size: 100},
 		},
 	}
 
@@ -55,7 +55,7 @@ func TestDHCP(t *testing.T) {
 	cm := ipv4.ControlMessage{IfIndex: iface.Index}
 
 	// Create a new guest
-	resp, err := http.Post(agent+"/guests", "text/json", bytes.NewReader(guestJSON))
+	resp, err := http.Post(agent+"/guests", "application/json", bytes.NewReader(guestJSON))
 	if err != nil {
 		t.Fatalf("Couldn't POST: %s\n", err.Error())
 	}
