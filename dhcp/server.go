@@ -12,19 +12,20 @@ import (
 
 type Server struct {
 	client *client.Client
+	iface  string
 }
 
-func NewServer(endpoint string) *Server {
+func NewServer(endpoint string, iface string) *Server {
 	server := &Server{}
 	server.client = client.NewClient(endpoint)
+	server.iface = iface
 
 	return server
 }
 
 func (s *Server) Run() {
-	log.Info("Starting DHCP server, agent address is %s", s.client.Endpoint)
-
-	err := dhcp.ListenAndServe(s)
+	log.Info("Starting DHCP server on %s, agent address is %s\n", s.iface, s.client.Endpoint)
+	err := dhcp.ListenAndServeIf(s.iface, s)
 	if err != nil {
 		log.Error(err)
 		os.Exit(1)
@@ -56,7 +57,7 @@ func (s *Server) ServeDHCP(packet dhcp.Packet, msgType dhcp.MessageType, options
 		return nil
 	}
 
-	log.Info("%+v\n", nic)
+	log.Info("Returning IP <%s> for MAC address <%s>\n", nic.Address, mac)
 
 	replyOpts := dhcp.Options{
 		dhcp.OptionRouter:           net.ParseIP(nic.Gateway).To4(),
@@ -64,7 +65,7 @@ func (s *Server) ServeDHCP(packet dhcp.Packet, msgType dhcp.MessageType, options
 		dhcp.OptionSubnetMask:       net.ParseIP(nic.Netmask).To4(),
 	}
 
-	reply := dhcp.ReplyPacket(packet, replyType, net.IP{0, 0, 0, 0}, net.ParseIP(nic.Address).To4(), time.Hour*24*7, replyOpts.SelectOrderOrAll(replyOpts[dhcp.OptionParameterRequestList]))
+	reply := dhcp.ReplyPacket(packet, replyType, net.IPv4zero, net.ParseIP(nic.Address).To4(), time.Hour*24*7, replyOpts.SelectOrderOrAll(replyOpts[dhcp.OptionParameterRequestList]))
 	return reply
 }
 
