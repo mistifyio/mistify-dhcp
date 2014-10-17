@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/mistifyio/mistify-agent/rpc"
 	"github.com/mistifyio/mistify-dhcp"
-	"github.com/mistifyio/mistify-dhcp/Godeps/_workspace/src/github.com/mistifyio/mistify-agent/rpc"
 	"log"
 	"net/http"
 	"net/http/httptest"
