@@ -8,6 +8,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 	config.vm.synced_folder ".", "/home/vagrant/go/src/github.com/mistifyio/mistify-dhcp", create: true
 
+    #config.vm.network "private_network", type: "dhcp"
+
+    config.vm.network "private_network",auto_config: false
+
 	config.vm.provider "vmware_fusion" do |v|
 		# GUI is needed because when you use bridging inside Linux,
 		# Fusion must ask for admin password
@@ -21,5 +25,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 cd /home/vagrant/go/src/github.com/mistifyio/mistify-dhcp
 go get github.com/tools/godep
 godep go install
+sudo apt-get update
+sudo apt-get install -y dhcping
+bash test.sh
 EOF
 end
