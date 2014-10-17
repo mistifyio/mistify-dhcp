@@ -24,3 +24,5 @@ _testmain.go
 *.prof
 
 .vagrant
+
+cmd/test-server/test-server
