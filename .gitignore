@@ -22,3 +22,7 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+.vagrant
+
+cmd/test-server/test-server
