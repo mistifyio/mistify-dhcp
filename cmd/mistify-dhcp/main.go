@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"github.com/mistifyio/mistify-dhcp/dhcp"
+	"github.com/mistifyio/mistify-dhcp"
 	"strings"
 )
 

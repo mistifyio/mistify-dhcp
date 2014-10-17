@@ -1,6 +1,7 @@
 package dhcp
 
 import (
+	"errors"
 	dhcp "github.com/krolaw/dhcp4"
 	"github.com/mistifyio/mistify-agent/client"
 	"github.com/mistifyio/mistify-agent/log"
@@ -9,6 +10,8 @@ import (
 	"os"
 	"time"
 )
+
+var NotFound = errors.New("not found")
 
 type Server struct {
 	client     *client.Client
@@ -25,7 +28,7 @@ func NewServer(endpoint string, ifaceNames []string) *Server {
 }
 
 func (s *Server) Run() {
-	log.Info("Starting DHCP server, agent address is %s\n", s.client.Endpoint)
+	log.Info("Starting DHCP server, agent address is %s\n", s.client.Config.Address)
 	conn, err := NewDHCPConnection(s.ifaceNames)
 	if err != nil {
 		log.Error(err)
@@ -89,5 +92,5 @@ func (server *Server) getNic(mac string) (*rpc.Nic, error) {
 			}
 		}
 	}
-	return nil, client.NotFound
+	return nil, NotFound
 }
