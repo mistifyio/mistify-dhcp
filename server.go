@@ -5,7 +5,6 @@ import (
 	dhcp "github.com/krolaw/dhcp4"
 	"github.com/mistifyio/mistify-agent/client"
 	"github.com/mistifyio/mistify-agent/log"
-	"github.com/mistifyio/mistify-agent/rpc"
 	"net"
 	"os"
 	"time"
@@ -79,7 +78,7 @@ func (s *Server) ServeDHCP(packet dhcp.Packet, msgType dhcp.MessageType, options
 	return reply
 }
 
-func (server *Server) getNic(mac string) (*rpc.Nic, error) {
+func (server *Server) getNic(mac string) (*client.Nic, error) {
 	guests, err := server.client.ListGuests()
 	if err != nil {
 		return nil, err
