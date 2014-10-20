@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	dhcp "github.com/krolaw/dhcp4"
-	"github.com/mistifyio/mistify-agent/rpc"
+	"github.com/mistifyio/mistify-agent/client"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -19,11 +19,11 @@ import (
 
 func TestDHCP(t *testing.T) {
 
-	guest := rpc.Guest{
+	guest := client.Guest{
 		Memory: 512,
 		Cpu:    1,
-		Nics: []rpc.Nic{
-			rpc.Nic{
+		Nics: []client.Nic{
+			client.Nic{
 				Model:   "e1000",
 				Address: "10.0.0.2",
 				Netmask: "255.255.255.0",
@@ -31,8 +31,8 @@ func TestDHCP(t *testing.T) {
 				Mac:     "DE:AD:BE:EF:3D:F4",
 			},
 		},
-		Disks: []rpc.Disk{
-			rpc.Disk{Size: 100},
+		Disks: []client.Disk{
+			client.Disk{Size: 100},
 		},
 	}
 
