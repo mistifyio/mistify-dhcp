@@ -13,22 +13,23 @@ import (
 var NotFound = errors.New("not found")
 
 type Server struct {
-	client     *client.Client
-	ifaceNames []string
+	client *client.Client
+	config *Config
 }
 
-func NewServer(endpoint string, ifaceNames []string) *Server {
+func NewServer(conf *Config) *Server {
 	server := &Server{}
-	c, _ := client.NewClient(&client.Config{Address: endpoint})
+	server.config = conf
+
+	c, _ := client.NewClient(&client.Config{Address: conf.Agent})
 	server.client = c
-	server.ifaceNames = ifaceNames
 
 	return server
 }
 
 func (s *Server) Run() {
 	log.Info("Starting DHCP server, agent address is %s\n", s.client.Config.Address)
-	conn, err := NewDHCPConnection(s.ifaceNames)
+	conn, err := NewDHCPConnection(s.config.Interfaces)
 	if err != nil {
 		log.Error(err)
 		os.Exit(1)
