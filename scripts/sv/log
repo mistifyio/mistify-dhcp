@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+exec 2>&1
+mkdir -p /var/log/mistify-dhcp
+exec svlogd /var/log/mistify-dhcp
