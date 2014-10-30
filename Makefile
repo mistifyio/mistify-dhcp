@@ -1,4 +1,4 @@
-PREFIX := ${DESTDIR}/opt/mistify
+PREFIX := /opt/mistify
 SBIN_DIR=$(PREFIX)/sbin
 SV_DIR=$(PREFIX)/sv
 ETC_DIR=$(PREFIX)/etc
@@ -13,11 +13,8 @@ clean:
 	go clean
 
 install: cmd/mistify-dhcp/mistify-dhcp
-	mkdir -p ${SBIN_DIR}
-	mkdir -p ${SV_DIR}
-
-	install -D cmd/mistify-dhcp/mistify-dhcp ${SBIN_DIR}/mistify-dhcp
-	install -D -m 0755 scripts/sv/run ${SV_DIR}/mistify-dhcp/run
-	install -D -m 0755 scripts/sv/log ${SV_DIR}/mistify-dhcp/log/run
+	install -D cmd/mistify-dhcp/mistify-dhcp $(DESTDIR)$${SBIN_DIR}/mistify-dhcp
+	install -D -m 0755 scripts/sv/run $(DESTDIR)$${SV_DIR}/mistify-dhcp/run
+	install -D -m 0755 scripts/sv/log $(DESTDIR)$${SV_DIR}/mistify-dhcp/log/run
 
 
