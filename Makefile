@@ -13,8 +13,11 @@ clean:
 	go clean
 
 install: cmd/mistify-dhcp/mistify-dhcp
-	install -D cmd/mistify-dhcp/mistify-dhcp $(DESTDIR)$${SBIN_DIR}/mistify-dhcp
-	install -D -m 0755 scripts/sv/run $(DESTDIR)$${SV_DIR}/mistify-dhcp/run
-	install -D -m 0755 scripts/sv/log $(DESTDIR)$${SV_DIR}/mistify-dhcp/log/run
+	mkdir -p $(DESTDIR)${SBIN_DIR}
+	mkdir -p $(DESTDIR)${SV_DIR}
+
+	install -D cmd/mistify-dhcp/mistify-dhcp $(DESTDIR)${SBIN_DIR}/mistify-dhcp
+	install -D -m 0755 scripts/sv/run $(DESTDIR)${SV_DIR}/mistify-dhcp/run
+	install -D -m 0755 scripts/sv/log $(DESTDIR)${SV_DIR}/mistify-dhcp/log/run
 
 
