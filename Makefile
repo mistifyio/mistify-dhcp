@@ -20,6 +20,4 @@ install: cmd/mistify-dhcp/mistify-dhcp
 	install -D -m 0755 scripts/sv/run ${SV_DIR}/mistify-dhcp/run
 	install -D -m 0755 scripts/sv/log ${SV_DIR}/mistify-dhcp/log/run
 
-	ln -sf ${SV_DIR}/mistify-dhcp /etc/service/mistify-dhcp
-
 
