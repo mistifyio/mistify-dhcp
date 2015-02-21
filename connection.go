@@ -4,9 +4,10 @@
 package dhcp
 
 import (
-	"code.google.com/p/go.net/ipv4"
-	"github.com/mistifyio/mistify-agent/log"
 	"net"
+
+	"code.google.com/p/go.net/ipv4"
+	log "github.com/Sirupsen/logrus"
 )
 
 type DHCPConnection struct {
@@ -58,7 +59,10 @@ func (conn DHCPConnection) WriteTo(data []byte, dest net.Addr) (int, error) {
 
 	destAddr, err := net.ResolveUDPAddr(dest.Network(), dest.String())
 	if err != nil {
-		log.Error(err)
+		log.WithFields(log.Fields{
+			"error": err,
+			"func":  "net.ResolveUDPAddr",
+		}).Fatal(err)
 		return 0, err
 	}
 
