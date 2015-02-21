@@ -2,10 +2,11 @@ package dhcp
 
 import (
 	"encoding/json"
-	"flag"
-	"github.com/mistifyio/mistify-agent/log"
 	"io/ioutil"
 	"strings"
+
+	"github.com/mistifyio/mistify-agent/log"
+	flag "github.com/spf13/pflag"
 )
 
 type (
@@ -25,25 +26,26 @@ func NewConfig() *Config {
 func GetConfig() (*Config, error) {
 	conf := new(Config)
 
-	agent := flag.String("agent", "", "Agent address")
-	ifaces := flag.String("interfaces", "", "Interfaces to listen on, comma-separated (default: all)")
-	configfile := flag.String("config-file", "", "Config file to read (default: none)")
+	var agent, ifaces, configfile string
 
+	flag.StringVarP(&agent, "agent", "a", "", "Agent address")
+	flag.StringVarP(&ifaces, "interfaces", "i", "", "Interfaces to listen on, comma-separated (default: all)")
+	flag.StringVarP(&configfile, "config-file", "c", "", "Config file to read (default: none)")
 	flag.Parse()
 
 	// Config file is parsed first, other command-line options will override its values
-	if *configfile != "" {
-		if err := conf.ParseConfigFile(*configfile); err != nil {
+	if configfile != "" {
+		if err := conf.ParseConfigFile(configfile); err != nil {
 			return nil, err
 		}
 	}
 
-	if *agent != "" {
-		conf.Agent = *agent
+	if agent != "" {
+		conf.Agent = agent
 	}
 
-	if *ifaces != "" {
-		conf.Interfaces = strings.Split(*ifaces, ",")
+	if ifaces != "" {
+		conf.Interfaces = strings.Split(ifaces, ",")
 	}
 
 	return conf, nil
