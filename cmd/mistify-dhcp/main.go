@@ -1,16 +1,19 @@
 package main
 
 import (
-	"github.com/mistifyio/mistify-agent/log"
+	log "github.com/Sirupsen/logrus"
 	"github.com/mistifyio/mistify-dhcp"
-	"os"
 )
 
 func main() {
+	log.SetFormatter(&log.JSONFormatter{})
+
 	conf, err := dhcp.GetConfig()
 	if err != nil {
-		log.Error(err)
-		os.Exit(1)
+		log.WithFields(log.Fields{
+			"error": err,
+			"func":  "dhcp.GetConfig",
+		}).Fatal(err)
 	}
 
 	server := dhcp.NewServer(conf)

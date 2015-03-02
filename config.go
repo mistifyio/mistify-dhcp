@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/mistifyio/mistify-agent/log"
+	log "github.com/Sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 )
 
@@ -61,7 +61,9 @@ func (conf *Config) ParseConfigFile(path string) error {
 		return err
 	}
 
-	log.Info("%v\n", conf)
+	log.WithFields(log.Fields{
+		"config": conf,
+	}).Info("Config file parsed")
 
 	return nil
 }
