@@ -3,10 +3,12 @@ package main
 import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/mistifyio/mistify-dhcp"
+	logx "github.com/mistifyio/mistify-logrus-ext"
 )
 
 func main() {
 	log.SetFormatter(&log.JSONFormatter{})
+	log.AddHook(&logx.ErrorMessageHook{})
 
 	conf, err := dhcp.GetConfig()
 	if err != nil {
