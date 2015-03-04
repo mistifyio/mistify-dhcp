@@ -51,15 +51,15 @@ func (s *Server) Run() {
 
 func (s *Server) ServeDHCP(packet dhcp.Packet, msgType dhcp.MessageType, options dhcp.Options) dhcp.Packet {
 	var replyType dhcp.MessageType
-	var logMessage string
+	var logType string
 
 	switch msgType {
 	case dhcp.Discover:
 		replyType = dhcp.Offer
-		logMessage = "Discover"
+		logType = "Discover"
 	case dhcp.Request:
 		replyType = dhcp.ACK
-		logMessage = "Request"
+		logType = "Request"
 	default:
 		return nil
 	}
@@ -67,8 +67,9 @@ func (s *Server) ServeDHCP(packet dhcp.Packet, msgType dhcp.MessageType, options
 	mac := packet.CHAddr().String()
 
 	log.WithFields(log.Fields{
-		"mac": mac,
-	}).Info("dhcp." + logMessage)
+		"mac":     mac,
+		"msgType": logType,
+	}).Info("Message received")
 
 	nic, err := s.getNic(mac)
 	if err != nil {
