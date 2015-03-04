@@ -2,12 +2,12 @@ package dhcp
 
 import (
 	"errors"
+	"net"
+	"time"
+
+	log "github.com/Sirupsen/logrus"
 	dhcp "github.com/krolaw/dhcp4"
 	"github.com/mistifyio/mistify-agent/client"
-	"github.com/mistifyio/mistify-agent/log"
-	"net"
-	"os"
-	"time"
 )
 
 var NotFound = errors.New("not found")
@@ -28,46 +28,63 @@ func NewServer(conf *Config) *Server {
 }
 
 func (s *Server) Run() {
-	log.Info("Starting DHCP server, agent address is %s\n", s.client.Config.Address)
+	log.WithFields(log.Fields{
+		"agent_address": s.client.Config.Address,
+	}).Info("Starting DHCP server")
+
 	conn, err := NewDHCPConnection(s.config.Interfaces)
 	if err != nil {
-		log.Error(err)
-		os.Exit(1)
+		log.WithFields(log.Fields{
+			"error": err,
+			"func":  "dhcp.NewDHCPConnection",
+		}).Fatal(err)
 	}
 
 	err = dhcp.Serve(conn, s)
 	if err != nil {
-		log.Error(err)
-		os.Exit(1)
+		log.WithFields(log.Fields{
+			"error": err,
+			"func":  "dhcp.Serve",
+		}).Fatal(err)
 	}
 }
 
 func (s *Server) ServeDHCP(packet dhcp.Packet, msgType dhcp.MessageType, options dhcp.Options) dhcp.Packet {
 	var replyType dhcp.MessageType
-	var logMessage string
+	var logType string
 
 	switch msgType {
 	case dhcp.Discover:
 		replyType = dhcp.Offer
-		logMessage = "Discover"
+		logType = "Discover"
 	case dhcp.Request:
 		replyType = dhcp.ACK
-		logMessage = "Request"
+		logType = "Request"
 	default:
 		return nil
 	}
 
 	mac := packet.CHAddr().String()
 
-	log.Info("dhcp.%s: %+v\n", logMessage, mac)
+	log.WithFields(log.Fields{
+		"mac":     mac,
+		"msgType": logType,
+	}).Info("Message received")
 
 	nic, err := s.getNic(mac)
 	if err != nil {
-		log.Error("Couldn't get NIC for MAC address %s: %s", mac, err.Error())
+		log.WithFields(log.Fields{
+			"mac":   mac,
+			"error": err,
+			"func":  "dhcp.Server.getNic",
+		}).Error("Couldn't get NIC for MAC address")
 		return nil
 	}
 
-	log.Info("Returning IP <%s> for MAC address <%s>\n", nic.Address, mac)
+	log.WithFields(log.Fields{
+		"mac": mac,
+		"ip":  nic.Address,
+	}).Info("Returning IP for MAC address")
 
 	replyOpts := dhcp.Options{
 		dhcp.OptionRouter:           net.ParseIP(nic.Gateway).To4(),
