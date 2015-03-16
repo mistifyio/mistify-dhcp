@@ -7,7 +7,13 @@ import (
 )
 
 func main() {
-	log.DefaultSetup("info")
+	err := logx.DefaultSetup("info")
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+			"func":  "logx.DefaultSetup",
+		}).Fatal("Could not set up logging")
+	}
 
 	conf, err := dhcp.GetConfig()
 	if err != nil {
