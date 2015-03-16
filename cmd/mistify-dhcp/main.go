@@ -7,8 +7,7 @@ import (
 )
 
 func main() {
-	log.SetFormatter(&log.JSONFormatter{})
-	log.AddHook(&logx.ErrorMessageHook{})
+	log.DefaultSetup("info")
 
 	conf, err := dhcp.GetConfig()
 	if err != nil {
