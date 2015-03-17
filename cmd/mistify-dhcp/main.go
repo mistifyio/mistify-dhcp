@@ -7,8 +7,12 @@ import (
 )
 
 func main() {
-	log.SetFormatter(&log.JSONFormatter{})
-	log.AddHook(&logx.ErrorMessageHook{})
+	if err := logx.DefaultSetup("info"); err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+			"func":  "logx.DefaultSetup",
+		}).Fatal("Could not set up logging")
+	}
 
 	conf, err := dhcp.GetConfig()
 	if err != nil {
