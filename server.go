@@ -10,13 +10,16 @@ import (
 	"github.com/mistifyio/mistify-agent/client"
 )
 
-var NotFound = errors.New("not found")
+// ErrNotFound indicates the nic with specified mac address wasn't found
+var ErrNotFound = errors.New("not found")
 
+// Server is the dhcp server
 type Server struct {
 	client *client.Client
 	config *Config
 }
 
+// NewServer creates a new server
 func NewServer(conf *Config) *Server {
 	server := &Server{}
 	server.config = conf
@@ -27,16 +30,17 @@ func NewServer(conf *Config) *Server {
 	return server
 }
 
+// Run starts the server
 func (s *Server) Run() {
 	log.WithFields(log.Fields{
 		"agent_address": s.client.Config.Address,
 	}).Info("Starting DHCP server")
 
-	conn, err := NewDHCPConnection(s.config.Interfaces)
+	conn, err := NewConnection(s.config.Interfaces)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
-			"func":  "dhcp.NewDHCPConnection",
+			"func":  "dhcp.NewConnection",
 		}).Fatal(err)
 	}
 
@@ -49,6 +53,7 @@ func (s *Server) Run() {
 	}
 }
 
+// ServeDHCP responds to DHCP requests
 func (s *Server) ServeDHCP(packet dhcp.Packet, msgType dhcp.MessageType, options dhcp.Options) dhcp.Packet {
 	var replyType dhcp.MessageType
 	var logType string
@@ -96,8 +101,8 @@ func (s *Server) ServeDHCP(packet dhcp.Packet, msgType dhcp.MessageType, options
 	return reply
 }
 
-func (server *Server) getNic(mac string) (*client.Nic, error) {
-	guests, err := server.client.ListGuests()
+func (s *Server) getNic(mac string) (*client.Nic, error) {
+	guests, err := s.client.ListGuests()
 	if err != nil {
 		return nil, err
 	}
@@ -109,5 +114,5 @@ func (server *Server) getNic(mac string) (*client.Nic, error) {
 			}
 		}
 	}
-	return nil, NotFound
+	return nil, ErrNotFound
 }
