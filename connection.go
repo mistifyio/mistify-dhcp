@@ -1,6 +1,3 @@
-// Connection object. Uses PacketConn and control messages to make sure
-// packets are sent over the correct interface.
-
 package dhcp
 
 import (
@@ -10,14 +7,17 @@ import (
 	log "github.com/Sirupsen/logrus"
 )
 
-type DHCPConnection struct {
+// Connection is a dhcp connection. Uses PacketConn and control messages to make
+// sure packets are sent over the correct interface.
+type Connection struct {
 	pconn  *ipv4.PacketConn
 	ifaces []int
 }
 
-func NewDHCPConnection(ifaceNames []string) (*DHCPConnection, error) {
+// NewConnection creates a new Connection
+func NewConnection(ifaceNames []string) (*Connection, error) {
 	var err error
-	conn := DHCPConnection{}
+	conn := Connection{}
 
 	addr := net.UDPAddr{IP: net.IPv4zero, Port: 67}
 	pconn, err := net.ListenPacket("udp4", addr.String())
@@ -48,12 +48,14 @@ func NewDHCPConnection(ifaceNames []string) (*DHCPConnection, error) {
 	return &conn, nil
 }
 
-func (conn DHCPConnection) ReadFrom(v []byte) (int, net.Addr, error) {
+// ReadFrom reads a packet from the connection
+func (conn Connection) ReadFrom(v []byte) (int, net.Addr, error) {
 	n, _, src, err := conn.pconn.ReadFrom(v)
 	return n, src, err
 }
 
-func (conn DHCPConnection) WriteTo(data []byte, dest net.Addr) (int, error) {
+// WriteTo writes a packet to the address
+func (conn Connection) WriteTo(data []byte, dest net.Addr) (int, error) {
 	var n int
 	cm := &ipv4.ControlMessage{}
 
@@ -80,7 +82,6 @@ func (conn DHCPConnection) WriteTo(data []byte, dest net.Addr) (int, error) {
 		}
 
 		return n, nil
-	} else {
-		return conn.pconn.WriteTo(data, cm, dest)
 	}
+	return conn.pconn.WriteTo(data, cm, dest)
 }

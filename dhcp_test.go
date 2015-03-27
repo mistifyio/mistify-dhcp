@@ -2,12 +2,9 @@ package dhcp
 
 import (
 	"bytes"
-	"code.google.com/p/go.net/ipv4"
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
-	dhcp "github.com/krolaw/dhcp4"
-	"github.com/mistifyio/mistify-agent/client"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -15,6 +12,10 @@ import (
 	"reflect"
 	"runtime"
 	"testing"
+
+	"code.google.com/p/go.net/ipv4"
+	dhcp "github.com/krolaw/dhcp4"
+	"github.com/mistifyio/mistify-agent/client"
 )
 
 func TestDHCP(t *testing.T) {
